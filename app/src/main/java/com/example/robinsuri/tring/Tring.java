@@ -10,15 +10,12 @@ import android.widget.EditText;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -85,7 +82,7 @@ String url = "https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/g
         Executor executor = Executors.newSingleThreadExecutor();
          HttpResponse response;
 
-           sendPostRequest.requestCallback  requestCback= new sendPostRequest.requestCallback() {
+           sendPostRequest.RequestCallback requestCback= new sendPostRequest.RequestCallback() {
                @Override
                public void getsResponse(HttpResponse httpresponse) throws IOException {
                  Log.d("Tring",httpresponse.toString());

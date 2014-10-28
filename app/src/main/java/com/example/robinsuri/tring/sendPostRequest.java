@@ -2,12 +2,10 @@ package com.example.robinsuri.tring;
 
 import android.util.Log;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -20,7 +18,7 @@ import java.util.concurrent.Executors;
 public class sendPostRequest {
 
     Executor executor = Executors.newSingleThreadExecutor();
-    public void sendRequest(final HttpPost postRequest, final requestCallback callback)
+    public void sendRequest(final HttpPost postRequest, final RequestCallback callback)
     {
         executor.execute(new Runnable() {
             @Override
@@ -41,7 +39,7 @@ public class sendPostRequest {
 
     }
 
-        public interface requestCallback{
+        public interface RequestCallback {
             void getsResponse(HttpResponse httpresponse) throws IOException;
         }
 }
