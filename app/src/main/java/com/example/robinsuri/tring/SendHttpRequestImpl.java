@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -15,10 +16,10 @@ import java.util.concurrent.Executors;
 /**
  * Created by robinsuri on 10/28/14.
  */
-public class sendPostRequest {
+public class SendHttpRequestImpl implements ISendHttpRequest {
 
     Executor executor = Executors.newSingleThreadExecutor();
-    public void sendRequest(final HttpPost postRequest, final RequestCallback callback)
+    public void sendPostRequest(final HttpPost postRequest, final HttpRequestCallback callback)
     {
         executor.execute(new Runnable() {
             @Override
@@ -27,10 +28,7 @@ public class sendPostRequest {
                 try {
                     Log.d("Tring","inside sendRequest");
                     HttpResponse response = httpclient.execute(postRequest);
-//                    HttpEntity entity = response.getEntity();
-//                    String responseString = EntityUtils.toString(entity, "UTF-8");
-//                    Log.d("Tring",responseString);
-                    callback.getsResponse(response);
+                    callback.httpResponse(response);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -39,7 +37,13 @@ public class sendPostRequest {
 
     }
 
-        public interface RequestCallback {
-            void getsResponse(HttpResponse httpresponse) throws IOException;
-        }
+    @Override
+    public void sendGetrequest(HttpGet httpget) {
+
+    }
+
+
+
+
+
 }

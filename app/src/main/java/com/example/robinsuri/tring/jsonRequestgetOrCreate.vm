@@ -1,0 +1,8 @@
+{
+    "name" : {
+            "firstName" : ${firstName}
+            "lastName" : ${lastName}
+             }
+    "emails"  : ${emailID}
+    "mobiles" : ${number}
+}

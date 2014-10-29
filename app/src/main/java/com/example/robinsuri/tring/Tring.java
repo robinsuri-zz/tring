@@ -1,6 +1,7 @@
 package com.example.robinsuri.tring;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,10 +15,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.io.UnsupportedEncodingException;
 
 
 public class Tring extends Activity {
@@ -49,7 +51,10 @@ public class Tring extends Activity {
     }
 
     public void onClickNext(View v) throws IOException {
-
+        final Tring tring = this;
+        final String EXTRA_MESSAGE = "message";
+        Log.d("Tring", "inside onClickNext");
+        final SendHttpRequestImpl spRequest = new SendHttpRequestImpl();
         EditText fName = (EditText) findViewById(R.id.firstName);
         EditText lName = (EditText) findViewById(R.id.lastName);
         EditText mNumber = (EditText) findViewById(R.id.phoneNumber);
@@ -57,47 +62,40 @@ public class Tring extends Activity {
 
         String firstName = fName.getText().toString();
         String lastName = lName.getText().toString();
-        String number =  "+91"+mNumber.getText().toString();
+        String number = "+91" + mNumber.getText().toString();
         String emailId = email.getText().toString();
-        Log.d("new",firstName+" "+lastName+" "+number+" "+emailId);
+        Log.d("new", firstName + " " + lastName + " " + number + " " + emailId);
 
-        String jsonRequestGetOrCreate = "{\n" +
-                "  \"name\" : {\n" +
-                "    \"firstName\" : \""+firstName+"\",\n" +
-                "    \"lastName\" : \""+lastName+"\"\n" +
-                "  },\n" +
-                "  \"emails\" : [\""+emailId+"\"],\n" +
-                "  \"mobiles\" : [ \""+number+"\"]\n" +
-                "}";
-        Log.d("Tring",jsonRequestGetOrCreate);
+        GetMapping getmapping = new GetMapping();
+        TestCallBack testcallback = new TestCallBack() {
+            @Override
+            public void getItBack(String mapping) {
+                Log.d("Tring", "mapping : " + mapping);
+                Intent intent = new Intent(tring, NumberActivity.class);
+                intent.putExtra(EXTRA_MESSAGE, "Call the number for verification : " + mapping);
+                startActivity(intent);
 
-    // send post request to /kujo.app/zeus/1.0/getOrCreateProfile with the above string
-String url = "https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/getOrCreateProfile";
-        final HttpPost postRequest = new HttpPost("https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/getOrCreateProfile");
+            }
+        };
 
-        StringEntity entity = new StringEntity(jsonRequestGetOrCreate);
-        entity.setContentType(new BasicHeader("Content-Type","application/json"));
+        getmapping.get(firstName, lastName, number, emailId, testcallback);
+
+
+
+    }
+public interface TestCallBack{
+    void getItBack(String mapping);
+}
+    HttpPost preparePostRequest(String url, String request) {
+        final HttpPost postRequest = new HttpPost(url);
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(request);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        entity.setContentType(new BasicHeader("Content-Type", "application/json"));
         postRequest.setEntity(entity);
-
-        Executor executor = Executors.newSingleThreadExecutor();
-         HttpResponse response;
-
-           sendPostRequest.RequestCallback requestCback= new sendPostRequest.RequestCallback() {
-               @Override
-               public void getsResponse(HttpResponse httpresponse) throws IOException {
-                 Log.d("Tring",httpresponse.toString());
-                   HttpEntity entity = httpresponse.getEntity();
-                   String responseString = EntityUtils.toString(entity, "UTF-8");
-                   Log.d("Tring",responseString);
-
-               }
-           };
-
-        sendPostRequest spRequest = new sendPostRequest();
-        spRequest.sendRequest(postRequest,requestCback);
-
-//        Log.d("Tring", response.toString());
-
-
+        return postRequest;
     }
 }
