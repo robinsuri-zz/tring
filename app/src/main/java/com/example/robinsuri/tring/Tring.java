@@ -9,14 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -66,7 +61,7 @@ public class Tring extends Activity {
         String emailId = email.getText().toString();
         Log.d("new", firstName + " " + lastName + " " + number + " " + emailId);
 
-        GetMapping getmapping = new GetMapping();
+        ZeusClient zeusclient = new ZeusClient();
         TestCallBack testcallback = new TestCallBack() {
             @Override
             public void getItBack(String mapping) {
@@ -78,7 +73,7 @@ public class Tring extends Activity {
             }
         };
 
-        getmapping.get(firstName, lastName, number, emailId, testcallback);
+        zeusclient.getMapping(firstName, lastName, number, emailId, testcallback);
 
 
 

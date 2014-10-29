@@ -18,9 +18,9 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by robinsuri on 10/29/14.
  */
-public class GetMapping {
+public class ZeusClient {
 
-    public void get(String firstName, String lastName, String number, String emailId, final Tring.TestCallBack testcallback) {
+    public void getMapping(String firstName, String lastName, String number, String emailId, final Tring.TestCallBack testcallback) {
 
         final JsonGenerate jsongenerate = new JsonGenerate();
         String jsonRequestGetOrCreate = jsongenerate.generateJsonGetOrCreate(firstName, lastName, number, emailId);
@@ -40,14 +40,7 @@ public class GetMapping {
                     jsonResponse = new JSONObject(responseString);
                     String mapping = (String) jsonResponse.get("mapping");
                     testcallback.getItBack(mapping);
-
-//                    Log.d("Tring", "mapping : " + mapping);
-//                    Intent intent = new Intent(tring, NumberActivity.class);
-//                    intent.putExtra(EXTRA_MESSAGE, "Call the number for verification : " + mapping);
-//                    startActivity(intent);
-
-
-                } catch (JSONException e) {
+                     } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
