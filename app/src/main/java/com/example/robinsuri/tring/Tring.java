@@ -1,6 +1,8 @@
 package com.example.robinsuri.tring;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -71,13 +73,17 @@ public class Tring extends Activity {
 
             @Override
             public void handleError(Exception e, String errorMessage) {
-//retry
+
+                new AlertDialog.Builder(tring)
+                        .setTitle("Error!!")
+                        .setMessage("Error in processing").setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
 
         };
 
 
-        zeusservice.getmapping(firstName, lastName, number, emailId, callbackForSessionCreate);
+      zeusservice.getmapping(firstName, lastName, number, emailId, callbackForSessionCreate);
 
 
     }
