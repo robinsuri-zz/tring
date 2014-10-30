@@ -9,12 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 
 public class Tring extends Activity {
@@ -61,12 +56,12 @@ public class Tring extends Activity {
         String emailId = email.getText().toString();
         Log.d("new", firstName + " " + lastName + " " + number + " " + emailId);
 
-        ZeusClient zeusclient = new ZeusClient();
-        zeusclient.setStagingUrl("https://proxy-staging-external.handler.talk.to/");
+        final ZeusService zeusservice = new ZeusService();
+        zeusservice.setStagingUrl("https://proxy-staging-external.handler.talk.to/");
 
-        TestCallBack testcallback = new TestCallBack() {
+        final callbackForSessionCreate callbackForSessionCreate = new callbackForSessionCreate() {
             @Override
-            public void getItBack(String mapping) {
+            public void sessionCallback(String mapping) {
                 Log.d("Tring", "mapping : " + mapping);
                 Intent intent = new Intent(tring, NumberActivity.class);
                 intent.putExtra(EXTRA_MESSAGE, "Call the number for verification : " + mapping);
@@ -75,21 +70,28 @@ public class Tring extends Activity {
             }
 
             @Override
-            public void handlerError(Exception e, String errorMessage) {
-                //retry
+            public void handleError(Exception e, String errorMessage) {
+//retry
             }
+
         };
 
-        zeusclient.getMapping
-                (firstName, lastName, number, emailId, testcallback);
+
+        zeusservice.getmapping(firstName, lastName, number, emailId, callbackForSessionCreate);
 
 
     }
 
-    public interface TestCallBack {
-        void getItBack(String mapping);
+    public interface callbackForSessionCreate {
+        void sessionCallback(String mapping);
 
-        void handlerError(Exception e, String errorMessage);
+        void handleError(Exception e, String errorMessage);
+    }
+
+    public interface callbackForCreateAccount {
+        void createCallback(String guid);
+
+        void handleError(Exception e, String errorMessage);
     }
 
 }
