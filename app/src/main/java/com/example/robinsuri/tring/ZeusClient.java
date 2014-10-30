@@ -22,14 +22,10 @@ import java.util.List;
  * Created by robinsuri on 10/29/14.
  */
 public class ZeusClient {
-    String getOrCreateUrl="kujo.app/zeus/1.0/getOrCreateProfile";
-    String sessionUrl= "kujo.app/zeus/1.0/mcSessionInitiate";
-     String stagingUrl;
-    final Gson gson = new Gson();
-    final SendHttpRequestImpl sendhttprequest = new SendHttpRequestImpl();
-    public String getGetOrCreateUrl() {
-        return getOrCreateUrl;
-    }
+    String getOrCreateUrl = "kujo.app/zeus/1.0/getOrCreateProfile";
+    String sessionUrl = "kujo.app/zeus/1.0/mcSessionInitiate";
+    String stagingUrl;
+
 
     public void getMapping(String firstName, String lastName, String number, String emailId, final Tring.TestCallBack testcallback) {
         ZeusService zeusService = new ZeusService();

@@ -73,27 +73,23 @@ public class Tring extends Activity {
                 startActivity(intent);
 
             }
+
+            @Override
+            public void handlerError(Exception e, String errorMessage) {
+                //retry
+            }
         };
 
         zeusclient.getMapping
                 (firstName, lastName, number, emailId, testcallback);
 
 
+    }
 
+    public interface TestCallBack {
+        void getItBack(String mapping);
+
+        void handlerError(Exception e, String errorMessage);
     }
-public interface TestCallBack{
-    void getItBack(String mapping);
-}
-    HttpPost preparePostRequest(String url, String request) {
-        final HttpPost postRequest = new HttpPost(url);
-        StringEntity entity = null;
-        try {
-            entity = new StringEntity(request);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        entity.setContentType(new BasicHeader("Content-Type", "application/json"));
-        postRequest.setEntity(entity);
-        return postRequest;
-    }
+
 }

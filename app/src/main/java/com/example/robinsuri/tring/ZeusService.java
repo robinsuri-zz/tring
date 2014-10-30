@@ -53,6 +53,11 @@ public class ZeusService {
             public void getmapping(String mapping) {
                 testcallback.getItBack(mapping);
             }
+
+            @Override
+            public void handleError(Exception e, String message) {
+
+            }
         };
 
 
@@ -72,6 +77,7 @@ public class ZeusService {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    testcallback.handlerError(e, e.getMessage());
                 }
 
                 Log.d("Tring", responseString);
@@ -87,6 +93,8 @@ public class ZeusService {
 
     public interface sessionCallBack {
         void getmapping(String mapping);
+
+        void handleError(Exception e, String message);
     }
 
     private void getSessionMappingFromGuid(String guid, final sessionCallBack sessioncallback) {
@@ -110,6 +118,7 @@ public class ZeusService {
                     sessioncallback.getmapping(mapping);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    sessioncallback.handleError(e, e.getMessage());
                 }
 
             }
