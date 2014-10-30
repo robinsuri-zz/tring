@@ -34,7 +34,7 @@ public class ZeusService {
 
             @Override
             public void handleError(Exception e, String errorMessage) {
-
+            callbackForSessionCreate.handleError(e,errorMessage);
             }
         };
         createAccount(firstName,lastName,number,emailId,callbackforcreateaccount);
