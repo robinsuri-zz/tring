@@ -43,7 +43,7 @@ public class ZeusClient {
     }
 
     public void getMapping(String firstName, String lastName, String number, String emailId, final Tring.TestCallBack testcallback) {
-        final GetorCreateJson getorCreateJson = getGetorCreateJson(firstName, lastName, number, emailId);
+        final GetorCreateJson getorCreateJson = generateGetorCreateProfileJson(firstName, lastName, number, emailId);
 
         String getorcreategson = gson.toJson(getorCreateJson);
         Log.d("Tring", "Gson serialized string : " + getorcreategson);
@@ -120,7 +120,7 @@ public class ZeusClient {
         sendhttprequest.sendPostRequest(sessionPostRequest, sessionResponseCallback);
 
     }
-    private GetorCreateJson getGetorCreateJson(String firstName, String lastName, String number, String emailId) {
+    private GetorCreateJson generateGetorCreateProfileJson(String firstName, String lastName, String number, String emailId) {
         final GetorCreateJson getorCreateJson = new GetorCreateJson();
         List<String> emails = new ArrayList<String>();
         emails.add(emailId);
