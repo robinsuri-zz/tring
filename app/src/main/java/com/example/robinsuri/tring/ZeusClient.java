@@ -1,7 +1,5 @@
 package com.example.robinsuri.tring;
 
-import android.content.Intent;
-import android.content.pm.PackageInstaller;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -17,52 +15,51 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by robinsuri on 10/29/14.
  */
 public class ZeusClient {
+    String getOrCreateUrl;
+    String sessionUrl;
+    final Gson gson = new Gson();
+    final SendHttpRequestImpl sendhttprequest = new SendHttpRequestImpl();
+    public String getGetOrCreateUrl() {
+        return getOrCreateUrl;
+    }
+
+    public void setGetOrCreateUrl(String getOrCreateUrl) {
+        this.getOrCreateUrl = getOrCreateUrl;
+    }
+
+    public String getSessionUrl() {
+        return sessionUrl;
+    }
+
+    public void setSessionUrl(String sessionUrl) {
+        this.sessionUrl = sessionUrl;
+    }
 
     public void getMapping(String firstName, String lastName, String number, String emailId, final Tring.TestCallBack testcallback) {
+        final GetorCreateJson getorCreateJson = getGetorCreateJson(firstName, lastName, number, emailId);
 
-
-        final GetorCreateJson getorCreateJson = new GetorCreateJson();
-        getorCreateJson.setEmails(emailId);
-        getorCreateJson.setMobiles(number);
-        NameJson nameJson = new NameJson();
-        nameJson.setFirstName(firstName);
-        nameJson.setLastName(lastName);
-        getorCreateJson.setNamejson(nameJson);
-
-
-        final Gson gson = new Gson();
         String getorcreategson = gson.toJson(getorCreateJson);
-        Log.d("Tring", "Gson serialized string : "+getorcreategson);
+        Log.d("Tring", "Gson serialized string : " + getorcreategson);
 
-        String url = "https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/getOrCreateProfile";
-        final HttpPost postRequest = preparePostRequest(url, getorcreategson);
-        final SendHttpRequestImpl sendhttprequest = new SendHttpRequestImpl();
+        final HttpPost postRequest = preparePostRequest(getOrCreateUrl, getorcreategson);
 
-
-        final SendHttpRequestImpl.HttpRequestCallback sessionResponseCallback = new SendHttpRequestImpl.HttpRequestCallback() {
+        final sessionCallBack sessioncallback = new sessionCallBack() {
             @Override
-            public void httpResponse(HttpResponse httpresponse) throws IOException {
-                String EXTRA_MESSAGE = "message";
-                HttpEntity entity = httpresponse.getEntity();
-                String responseString = EntityUtils.toString(entity, "UTF-8");
-                JSONObject jsonResponse = null;
-                try {
-                    jsonResponse = new JSONObject(responseString);
-                    String mapping = (String) jsonResponse.get("mapping");
-                    testcallback.getItBack(mapping);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+            public void getmapping(String mapping) {
+                testcallback.getItBack(mapping);
             }
         };
 
-        ISendHttpRequest.HttpRequestCallback httpRequestCallback = new ISendHttpRequest.HttpRequestCallback() {
+
+
+        ISendHttpRequest.HttpRequestCallback getOrCreateProfileCallback = new ISendHttpRequest.HttpRequestCallback() {
             @Override
             public void httpResponse(HttpResponse httpresponse) throws IOException {
                 Log.d("Tring", httpresponse.toString());
@@ -70,16 +67,10 @@ public class ZeusClient {
                 String responseString = EntityUtils.toString(entity, "UTF-8");
                 try {
                     JSONObject jsonResponse = new JSONObject(responseString);
-                    Log.d("Tring","json response : "+jsonResponse );
+                    Log.d("Tring", "json response : " + jsonResponse);
                     String guid = (String) jsonResponse.get("guid");
                     Log.d("Tring", guid);
-                    String sessionUrl = "https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/mcSessionInitiate";
-                    SessionRequestGson sessionRequestGson = new SessionRequestGson();
-                    sessionRequestGson.setGuid(guid);
-                    String jsonSessionRequest = gson.toJson(sessionRequestGson);
-
-                    final HttpPost sessionPostRequest = preparePostRequest(sessionUrl, jsonSessionRequest);
-                    sendhttprequest.sendPostRequest(sessionPostRequest, sessionResponseCallback);
+                    getSessionMappingFromGuid(guid, sessioncallback);
 
 
                 } catch (JSONException e) {
@@ -92,9 +83,56 @@ public class ZeusClient {
         };
 
 
-        sendhttprequest.sendPostRequest(postRequest, httpRequestCallback);
+        sendhttprequest.sendPostRequest(postRequest, getOrCreateProfileCallback);
 
 
+    }
+
+    public interface sessionCallBack {
+        void getmapping(String mapping);
+    }
+    private void getSessionMappingFromGuid(String guid, final sessionCallBack sessioncallback)
+    {
+
+
+        SessionRequestGson sessionRequestGson = new SessionRequestGson();
+        sessionRequestGson.setGuid(guid);
+        String jsonSessionRequest = gson.toJson(sessionRequestGson);
+        final HttpPost sessionPostRequest = preparePostRequest(sessionUrl, jsonSessionRequest);
+
+        final SendHttpRequestImpl.HttpRequestCallback sessionResponseCallback = new SendHttpRequestImpl.HttpRequestCallback() {
+            @Override
+            public void httpResponse(HttpResponse httpresponse) throws IOException {
+
+                HttpEntity entity = httpresponse.getEntity();
+                String responseString = EntityUtils.toString(entity, "UTF-8");
+                JSONObject jsonResponse = null;
+                try {
+                    jsonResponse = new JSONObject(responseString);
+                    String mapping = (String) jsonResponse.get("mapping");
+                    sessioncallback.getmapping(mapping);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        sendhttprequest.sendPostRequest(sessionPostRequest, sessionResponseCallback);
+
+    }
+    private GetorCreateJson getGetorCreateJson(String firstName, String lastName, String number, String emailId) {
+        final GetorCreateJson getorCreateJson = new GetorCreateJson();
+        List<String> emails = new ArrayList<String>();
+        emails.add(emailId);
+        getorCreateJson.setEmails(emails);
+        List<String> mobiles = new ArrayList<String>();
+        mobiles.add(number);
+        getorCreateJson.setMobiles(mobiles);
+        NameJson nameJson = new NameJson();
+        nameJson.setFirstName(firstName);
+        nameJson.setLastName(lastName);
+        getorCreateJson.setNamejson(nameJson);
+        return getorCreateJson;
     }
 
     HttpPost preparePostRequest(String url, String request) {

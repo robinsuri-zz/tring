@@ -28,6 +28,7 @@ public class SendHttpRequestImpl implements ISendHttpRequest {
                 try {
                     Log.d("Tring","inside sendRequest");
                     HttpResponse response = httpclient.execute(postRequest);
+                    Log.d("Tring","URI : "+postRequest.getURI());
                     callback.httpResponse(response);
                 } catch (IOException e) {
                     e.printStackTrace();

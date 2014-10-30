@@ -62,6 +62,8 @@ public class Tring extends Activity {
         Log.d("new", firstName + " " + lastName + " " + number + " " + emailId);
 
         ZeusClient zeusclient = new ZeusClient();
+        zeusclient.setGetOrCreateUrl("https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/getOrCreateProfile");
+        zeusclient.setSessionUrl("https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/mcSessionInitiate");
         TestCallBack testcallback = new TestCallBack() {
             @Override
             public void getItBack(String mapping) {

@@ -3,14 +3,16 @@ package com.example.robinsuri.tring;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
 /**
  * Created by robinsuri on 10/30/14.
  */
 public class GetorCreateJson {
     @SerializedName("name") NameJson namejson;
-    String emails;
-    String mobiles;
-
+    List<String> emails;
+    List<String> mobiles;
 
     public NameJson getNamejson() {
         return namejson;
@@ -20,19 +22,19 @@ public class GetorCreateJson {
         this.namejson = namejson;
     }
 
-    public String getEmails() {
+    public List<String> getEmails() {
         return emails;
     }
 
-    public void setEmails(String emails) {
+    public void setEmails(List<String> emails) {
         this.emails = emails;
     }
 
-    public String getMobiles() {
+    public List<String> getMobiles() {
         return mobiles;
     }
 
-    public void setMobiles(String mobiles) {
+    public void setMobiles(List<String> mobiles) {
         this.mobiles = mobiles;
     }
 }
