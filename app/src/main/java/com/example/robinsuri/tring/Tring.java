@@ -73,7 +73,8 @@ public class Tring extends Activity {
             }
         };
 
-        zeusclient.getMapping(firstName, lastName, number, emailId, testcallback);
+        zeusclient.getMapping
+                (firstName, lastName, number, emailId, testcallback);
 
 
 

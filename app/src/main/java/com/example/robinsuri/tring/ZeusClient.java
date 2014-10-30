@@ -1,7 +1,10 @@
 package com.example.robinsuri.tring;
 
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
 import android.util.Log;
+
+import com.google.gson.Gson;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,10 +25,22 @@ public class ZeusClient {
 
     public void getMapping(String firstName, String lastName, String number, String emailId, final Tring.TestCallBack testcallback) {
 
-        final JsonGenerate jsongenerate = new JsonGenerate();
-        String jsonRequestGetOrCreate = jsongenerate.generateJsonGetOrCreate(firstName, lastName, number, emailId);
+
+        final GetorCreateJson getorCreateJson = new GetorCreateJson();
+        getorCreateJson.setEmails(emailId);
+        getorCreateJson.setMobiles(number);
+        NameJson nameJson = new NameJson();
+        nameJson.setFirstName(firstName);
+        nameJson.setLastName(lastName);
+        getorCreateJson.setNamejson(nameJson);
+
+
+        final Gson gson = new Gson();
+        String getorcreategson = gson.toJson(getorCreateJson);
+        Log.d("Tring", "Gson serialized string : "+getorcreategson);
+
         String url = "https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/getOrCreateProfile";
-        final HttpPost postRequest = preparePostRequest(url, jsonRequestGetOrCreate);
+        final HttpPost postRequest = preparePostRequest(url, getorcreategson);
         final SendHttpRequestImpl sendhttprequest = new SendHttpRequestImpl();
 
 
@@ -40,7 +55,7 @@ public class ZeusClient {
                     jsonResponse = new JSONObject(responseString);
                     String mapping = (String) jsonResponse.get("mapping");
                     testcallback.getItBack(mapping);
-                     } catch (JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
@@ -55,10 +70,13 @@ public class ZeusClient {
                 String responseString = EntityUtils.toString(entity, "UTF-8");
                 try {
                     JSONObject jsonResponse = new JSONObject(responseString);
+                    Log.d("Tring","json response : "+jsonResponse );
                     String guid = (String) jsonResponse.get("guid");
                     Log.d("Tring", guid);
                     String sessionUrl = "https://proxy-staging-external.handler.talk.to/kujo.app/zeus/1.0/mcSessionInitiate";
-                    String jsonSessionRequest = jsongenerate.generateSessionRequest(guid);
+                    SessionRequestGson sessionRequestGson = new SessionRequestGson();
+                    sessionRequestGson.setGuid(guid);
+                    String jsonSessionRequest = gson.toJson(sessionRequestGson);
 
                     final HttpPost sessionPostRequest = preparePostRequest(sessionUrl, jsonSessionRequest);
                     sendhttprequest.sendPostRequest(sessionPostRequest, sessionResponseCallback);
@@ -74,7 +92,7 @@ public class ZeusClient {
         };
 
 
-        sendhttprequest.sendPostRequest(postRequest,httpRequestCallback);
+        sendhttprequest.sendPostRequest(postRequest, httpRequestCallback);
 
 
     }
