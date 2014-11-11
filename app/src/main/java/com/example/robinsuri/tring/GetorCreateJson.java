@@ -1,7 +1,6 @@
 package com.example.robinsuri.tring;
 
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -10,16 +9,17 @@ import java.util.List;
  * Created by robinsuri on 10/30/14.
  */
 public class GetorCreateJson {
-    @SerializedName("name") NameJson namejson;
+    @SerializedName("name")
+    NameJson _namejson;
     List<String> emails;
     List<String> mobiles;
 
-    public NameJson getNamejson() {
-        return namejson;
+    public NameJson get_namejson() {
+        return _namejson;
     }
 
-    public void setNamejson(NameJson namejson) {
-        this.namejson = namejson;
+    public void set_namejson(NameJson _namejson) {
+        this._namejson = _namejson;
     }
 
     public List<String> getEmails() {

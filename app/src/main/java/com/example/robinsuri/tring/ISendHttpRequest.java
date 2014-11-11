@@ -6,11 +6,9 @@ import org.apache.http.client.methods.HttpPost;
 
 import java.io.IOException;
 
-/**
- * Created by robinsuri on 10/28/14.
- */
 public interface ISendHttpRequest {
     public void sendPostRequest(final HttpPost postRequest, final HttpRequestCallback callback);
+
     public void sendGetrequest(HttpGet httpget);
 
 

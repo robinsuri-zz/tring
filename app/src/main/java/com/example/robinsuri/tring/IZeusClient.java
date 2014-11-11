@@ -8,9 +8,9 @@ public interface IZeusClient {
 
     void setSessionUrl(String sessionUrl);
 
-    void setStagingUrl(String stagingUrl);
+    //  void setStagingUrl(String stagingUrl);
 
-    void createAccount(String firstName, String lastName, String number, String emailId, Tring.callbackForCreateAccount testcallback);
+    void createAccount(String firstName, String lastName, String number, String emailId, Tring.callbackForCreateAccount callbackForCreateAccount);
 
     void getSessionMappingFromGuid(String guid, Tring.callbackForSessionCreate sessioncallback);
 }

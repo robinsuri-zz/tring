@@ -27,7 +27,7 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("Tring","Inside onCreate of Tring");
+        Log.d("Tring", "Inside onCreate of Tring");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tring);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -37,17 +37,16 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
 //        BlankFragment fragment = new BlankFragment();
 //        fragmentTransaction.add(R.id.Form, fragment);
 //        fragmentTransaction.commit();
-        Boolean isBackButtonPressed = settings.getBoolean("isBackButtonPressed",true);
-        String token = settings.getString("token","");
-        if (!"null".equals(number) && isBackButtonPressed==false && token.equals("")) {
+        Boolean isBackButtonPressed = settings.getBoolean("isBackButtonPressed", true);
+        String token = settings.getString("token", "");
+        if (!"null".equals(number) && isBackButtonPressed == false && token.equals("")) {
             Intent intent = new Intent(this, NumberActivity.class);
             intent.putExtra(EXTRA_MESSAGE, number);
             startActivityForResult(intent, 5);
 
         }
 
-        if(!token.equals(""))
-        {
+        if (!token.equals("")) {
             Intent intent = new Intent(this, MainScreen.class);
             startActivity(intent);
         }
@@ -99,8 +98,8 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
 
         final callbackForSessionCreate callbackForSessionCreate = new callbackForSessionCreate() {
             @Override
-            public void sessionCallback(final String mapping,String sessionId) {
-                persist(mapping,sessionId);
+            public void sessionCallback(final String mapping, String sessionId) {
+                persist(mapping, sessionId);
 
 
                 Log.d("Tring", "mapping : " + mapping);
@@ -109,7 +108,7 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
                     public void run() {
                         Intent intent = new Intent(tring, NumberActivity.class);
                         intent.putExtra(EXTRA_MESSAGE, mapping);
-
+                        Log.d("Tring", "startActivity NumberActivity");
                         startActivityForResult(intent, 1);
                     }
                 });
@@ -121,9 +120,9 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
                 SharedPreferences settings = tring.getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("number", mapping);
-                editor.putString("sessionId",sessionId);
+                editor.putString("sessionId", sessionId);
                 editor.commit();
-                Log.d("Tring","Number from file : "+settings.getString("number",""));
+                Log.d("Tring", "Number from file : " + settings.getString("number", ""));
             }
 
             @Override
@@ -149,7 +148,7 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
     }
 
     public interface callbackForSessionCreate {
-        void sessionCallback(String mapping,String sessionId);
+        void sessionCallback(String mapping, String sessionId);
 
         void handleError(Exception e, String errorMessage);
     }
@@ -162,26 +161,20 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
 
     public interface callbackForAuthentication {
         void authenticateCallback(String token);
-        void handleError(Exception e,String errorMessage);
+
+        void handleError(Exception e, String errorMessage);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("Tring","Inside onActivityResult of Tring2");
+        Log.d("Tring", "Inside onActivityResult of Tring2");
         super.onActivityResult(requestCode, resultCode, data);
-Log.d("Tring","Inside onActivityResult of Tring");
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                Log.d("Tring","Finish Called");
-                this.finish();
-
-            }
-        }
+        this.finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("Tring","Inside onDestroy");
+        Log.d("Tring", "Inside onDestroy");
     }
 }

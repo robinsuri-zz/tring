@@ -100,9 +100,9 @@ public class NumberActivity extends Activity {
                             Intent intent = new Intent(numberActivity, MainScreen.class);
                             startActivity(intent);
                             Log.d("NumberActivity", "SetResult called");
-                            setResult(RESULT_OK,new Intent());
+                            setResult(RESULT_OK, new Intent());
                             finish();
-                            Log.d("NumberActivity","Finish Called");
+                            Log.d("NumberActivity", "Finish Called");
                         }
                     });
 
@@ -111,7 +111,7 @@ public class NumberActivity extends Activity {
 
                 @Override
                 public void handleError(Exception e, String errorMessage) {
-Log.d("NumberActivity","Inside handleError");
+                    Log.d("NumberActivity", "Inside handleError");
                 }
             };
             SharedPreferences.Editor editor = settings.edit();
@@ -175,9 +175,8 @@ Log.d("NumberActivity","Inside handleError");
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("NumberActivity","Inside onDestroy");
+        Log.d("NumberActivity", "Inside onDestroy");
     }
-
 
 
 }

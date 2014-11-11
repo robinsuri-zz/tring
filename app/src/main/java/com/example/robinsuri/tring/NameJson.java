@@ -5,22 +5,22 @@ package com.example.robinsuri.tring;
  */
 public class NameJson {
 
-    String firstName;
-    String lastName;
+    String _firstName;
+    String _lastName;
 
     public String getFirstName() {
-        return firstName;
+        return _firstName;
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this._firstName = firstName;
     }
 
     public String getLastName() {
-        return lastName;
+        return _lastName;
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this._lastName = lastName;
     }
 }

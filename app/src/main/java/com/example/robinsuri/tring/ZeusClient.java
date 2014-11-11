@@ -22,15 +22,12 @@ import java.util.List;
  * Created by robinsuri on 10/30/14.
  */
 public class ZeusClient implements IZeusClient {
-    String getOrCreateUrl;
-    String sessionUrl;
+    String getOrCreateUrl = "kujo.app/zeus/1.0/getOrCreateProfile";
+    String sessionUrl = "kujo.app/zeus/1.0/mcSessionInitiate";
     String stagingUrl;
+    String authentiateUrl = "kujo.app/zeus/1.0/authenticate";
 
-    public void setAuthentiateUrl(String authentiateUrl) {
-        this.authentiateUrl = authentiateUrl;
-    }
 
-    String authentiateUrl;
     final Gson gson = new Gson();
     final SendHttpRequestImpl sendhttprequest = new SendHttpRequestImpl();
 
@@ -44,13 +41,13 @@ public class ZeusClient implements IZeusClient {
         this.sessionUrl = sessionUrl;
     }
 
-    @Override
+
     public void setStagingUrl(String stagingUrl) {
         this.stagingUrl = stagingUrl;
     }
 
     @Override
-    public void createAccount(String firstName, String lastName, String number, String emailId, final Tring.callbackForCreateAccount testcallback) {
+    public void createAccount(String firstName, String lastName, String number, String emailId, final Tring.callbackForCreateAccount callbackForCreateAccount) {
         final GetorCreateJson getorCreateJson = generateGetorCreateProfileJson(firstName, lastName, number, emailId);
 
         String getorcreategson = gson.toJson(getorCreateJson);
@@ -67,12 +64,12 @@ public class ZeusClient implements IZeusClient {
                     JSONObject jsonResponse = new JSONObject(responseString);
                     Log.d("Tring", "json response : " + jsonResponse);
                     String guid = (String) jsonResponse.get("guid");
-                    testcallback.createCallback(guid);
+                    callbackForCreateAccount.createCallback(guid);
 
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    testcallback.handleError(e, e.getMessage());
+                    callbackForCreateAccount.handleError(e, e.getMessage());
                 }
 
                 Log.d("Tring", responseString);
@@ -127,7 +124,7 @@ public class ZeusClient implements IZeusClient {
         NameJson nameJson = new NameJson();
         nameJson.setFirstName(firstName);
         nameJson.setLastName(lastName);
-        getorCreateJson.setNamejson(nameJson);
+        getorCreateJson.set_namejson(nameJson);
         return getorCreateJson;
     }
 
@@ -163,7 +160,7 @@ public class ZeusClient implements IZeusClient {
                     String token = (String) jsonResponse.get("token");
                     callbackForAuthentication.authenticateCallback(token);
                 } catch (JSONException e) {
-                    Log.d("ZeusClient","No token found");
+                    Log.d("ZeusClient", "No token found");
                     e.printStackTrace();
                     callbackForAuthentication.handleError(e, e.getMessage());
                 }

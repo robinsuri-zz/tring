@@ -19,16 +19,16 @@ import java.util.concurrent.Executors;
 public class SendHttpRequestImpl implements ISendHttpRequest {
 
     Executor executor = Executors.newSingleThreadExecutor();
-    public void sendPostRequest(final HttpPost postRequest, final HttpRequestCallback callback)
-    {
+
+    public void sendPostRequest(final HttpPost postRequest, final HttpRequestCallback callback) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 final HttpClient httpclient = new DefaultHttpClient();
                 try {
-                    Log.d("Tring","inside sendRequest");
+                    Log.d("Tring", "inside sendRequest");
                     HttpResponse response = httpclient.execute(postRequest);
-                    Log.d("Tring","URI : "+postRequest.getURI());
+                    Log.d("Tring", "URI : " + postRequest.getURI());
                     callback.httpResponse(response);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -42,9 +42,6 @@ public class SendHttpRequestImpl implements ISendHttpRequest {
     public void sendGetrequest(HttpGet httpget) {
 
     }
-
-
-
 
 
 }

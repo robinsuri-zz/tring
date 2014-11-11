@@ -9,15 +9,9 @@ import android.util.Log;
  */
 public class ZeusService {
 
-    String getOrCreateUrl = "kujo.app/zeus/1.0/getOrCreateProfile";
-    String sessionUrl = "kujo.app/zeus/1.0/mcSessionInitiate";
+
     String stagingUrl;
 
-    public void setAuthenticateUrl(String authenticateUrl) {
-        this.authenticateUrl = authenticateUrl;
-    }
-
-    String authenticateUrl = "kujo.app/zeus/1.0/authenticate";
 
     ZeusClient zeusClient = new ZeusClient();
 
@@ -34,13 +28,13 @@ public class ZeusService {
 
 
     public void createAccount(String firstName, String lastName, String number, String emailId, final Tring.callbackForCreateAccount testcallback) {
-        zeusClient.setGetOrCreateUrl(getOrCreateUrl);
+
         zeusClient.setStagingUrl(stagingUrl);
         zeusClient.createAccount(firstName, lastName, number, emailId, testcallback);
     }
 
     public void createSession(String guid, Tring.callbackForSessionCreate testcallback) {
-        zeusClient.setSessionUrl(sessionUrl);
+
         zeusClient.getSessionMappingFromGuid(guid, testcallback);
     }
 
@@ -69,13 +63,11 @@ public class ZeusService {
         SharedPreferences.Editor editor = sharePreferencesData.edit();
         editor.putString("guid", guid);
         editor.commit();
-        Log.d("Tring", "Guid from sharedPreferences : " + sharePreferencesData.getString("guid", ""));
+        Log.d("ZeusService", "Guid from sharedPreferences : " + sharePreferencesData.getString("guid", ""));
     }
 
     public void getToken(String guid, String sessionId, Tring.callbackForAuthentication callbackForAuthentication) {
         zeusClient.setStagingUrl(stagingUrl);
-        zeusClient.setAuthentiateUrl(authenticateUrl);
-
         zeusClient.authenticate(guid, sessionId, callbackForAuthentication);
 
     }
