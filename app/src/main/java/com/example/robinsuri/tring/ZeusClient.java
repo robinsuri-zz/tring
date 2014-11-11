@@ -163,6 +163,7 @@ public class ZeusClient implements IZeusClient {
                     String token = (String) jsonResponse.get("token");
                     callbackForAuthentication.authenticateCallback(token);
                 } catch (JSONException e) {
+                    Log.d("ZeusClient","No token found");
                     e.printStackTrace();
                     callbackForAuthentication.handleError(e, e.getMessage());
                 }

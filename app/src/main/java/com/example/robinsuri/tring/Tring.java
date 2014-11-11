@@ -2,10 +2,13 @@ package com.example.robinsuri.tring;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,7 +19,7 @@ import android.widget.EditText;
 import java.io.IOException;
 
 
-public class Tring extends Activity {
+public class Tring extends Activity implements BlankFragment.OnFragmentInteractionListener {
 
     public static final String PREFS_NAME = "MyPrefsFile";
     final String EXTRA_MESSAGE = "message";
@@ -29,7 +32,11 @@ public class Tring extends Activity {
         setContentView(R.layout.activity_tring);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         String number = settings.getString("number", "null");
-
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        BlankFragment fragment = new BlankFragment();
+//        fragmentTransaction.add(R.id.Form, fragment);
+//        fragmentTransaction.commit();
         Boolean isBackButtonPressed = settings.getBoolean("isBackButtonPressed",true);
         String token = settings.getString("token","");
         if (!"null".equals(number) && isBackButtonPressed==false && token.equals("")) {
@@ -136,6 +143,11 @@ public class Tring extends Activity {
 
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
     public interface callbackForSessionCreate {
         void sessionCallback(String mapping,String sessionId);
 
@@ -160,12 +172,16 @@ public class Tring extends Activity {
 Log.d("Tring","Inside onActivityResult of Tring");
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
+                Log.d("Tring","Finish Called");
                 this.finish();
 
             }
         }
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("Tring","Inside onDestroy");
+    }
 }
