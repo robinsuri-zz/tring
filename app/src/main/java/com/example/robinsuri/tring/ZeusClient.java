@@ -25,6 +25,12 @@ public class ZeusClient implements IZeusClient {
     String getOrCreateUrl;
     String sessionUrl;
     String stagingUrl;
+
+    public void setAuthentiateUrl(String authentiateUrl) {
+        this.authentiateUrl = authentiateUrl;
+    }
+
+    String authentiateUrl;
     final Gson gson = new Gson();
     final SendHttpRequestImpl sendhttprequest = new SendHttpRequestImpl();
 
@@ -61,7 +67,7 @@ public class ZeusClient implements IZeusClient {
                     JSONObject jsonResponse = new JSONObject(responseString);
                     Log.d("Tring", "json response : " + jsonResponse);
                     String guid = (String) jsonResponse.get("guid");
-                   testcallback.createCallback(guid);
+                    testcallback.createCallback(guid);
 
 
                 } catch (JSONException e) {
@@ -75,7 +81,6 @@ public class ZeusClient implements IZeusClient {
         };
         sendhttprequest.sendPostRequest(postRequest, getOrCreateProfileCallback);
     }
-
 
 
     @Override
@@ -96,8 +101,10 @@ public class ZeusClient implements IZeusClient {
                 JSONObject jsonResponse = null;
                 try {
                     jsonResponse = new JSONObject(responseString);
+                    Log.d("Tring", "json response : " + jsonResponse);
                     String mapping = (String) jsonResponse.get("mapping");
-                    callbackForSessionCreate.sessionCallback(mapping);
+                    String sessionId = (String) jsonResponse.get("sessionId");
+                    callbackForSessionCreate.sessionCallback(mapping, sessionId);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     callbackForSessionCreate.handleError(e, e.getMessage());
@@ -137,5 +144,34 @@ public class ZeusClient implements IZeusClient {
         return postRequest;
     }
 
+    void authenticate(String guid, String sessionId, final Tring.callbackForAuthentication callbackForAuthentication) {
+        AuthenticateGson authenticateGson = new AuthenticateGson();
+        authenticateGson.setGuid(guid);
+        authenticateGson.setSessionId(sessionId);
+        String jsonAuthenticateRequest = gson.toJson(authenticateGson);
+        final HttpPost authenticatePostRequest = preparePostRequest(stagingUrl + authentiateUrl, jsonAuthenticateRequest);
+        final SendHttpRequestImpl.HttpRequestCallback httpResponseCallback = new SendHttpRequestImpl.HttpRequestCallback() {
+            @Override
+            public void httpResponse(HttpResponse httpresponse) throws IOException {
+
+                HttpEntity entity = httpresponse.getEntity();
+                String responseString = EntityUtils.toString(entity, "UTF-8");
+                JSONObject jsonResponse = null;
+                try {
+                    jsonResponse = new JSONObject(responseString);
+                    Log.d("Tring", "json response : " + jsonResponse);
+                    String token = (String) jsonResponse.get("token");
+                    callbackForAuthentication.authenticateCallback(token);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callbackForAuthentication.handleError(e, e.getMessage());
+                }
+
+            }
+        };
+        sendhttprequest.sendPostRequest(authenticatePostRequest, httpResponseCallback);
+
+
+    }
 
 }
