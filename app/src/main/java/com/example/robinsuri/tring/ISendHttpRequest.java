@@ -1,5 +1,7 @@
 package com.example.robinsuri.tring;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -7,7 +9,7 @@ import org.apache.http.client.methods.HttpPost;
 import java.io.IOException;
 
 public interface ISendHttpRequest {
-    public void sendPostRequest(final HttpPost postRequest, final HttpRequestCallback callback);
+    public ListenableFuture<HttpResponse> sendPostRequest(final HttpPost postRequest);
 
     public void sendGetrequest(HttpGet httpget);
 

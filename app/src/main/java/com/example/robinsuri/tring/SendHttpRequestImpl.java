@@ -30,7 +30,7 @@ public class SendHttpRequestImpl implements ISendHttpRequest {
     Executor executor = Executors.newSingleThreadExecutor();
     ListeningExecutorService pool = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
 
-    public void sendPostRequest(final HttpPost postRequest, final HttpRequestCallback callback) {
+    public ListenableFuture<HttpResponse> sendPostRequest(final HttpPost postRequest) {
 
         final ListenableFuture<HttpResponse> future = pool.submit(new Callable<HttpResponse>() {
             @Override
@@ -44,47 +44,7 @@ public class SendHttpRequestImpl implements ISendHttpRequest {
             }
         });
 
-//        future.addListener(new Runnable() {
-//            @Override
-//
-//            public void run() {
-//                try {
-//
-//                    HttpResponse response = future.get();
-//                    callback.httpResponse(response);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                } catch (ExecutionException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        },MoreExecutors.sameThreadExecutor());
-
-        Futures.addCallback(future, new FutureCallback<HttpResponse>() {
-            @Override
-            public void onSuccess(HttpResponse contents) {
-                //...process web site contents
-                try {
-                    HttpResponse response = future.get();
-                    callback.httpResponse(response);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                //log.error("Exception in task", throwable);
-            }
-        });
+        return future;
 
 
     }

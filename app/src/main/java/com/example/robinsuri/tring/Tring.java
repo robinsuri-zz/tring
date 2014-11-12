@@ -35,6 +35,7 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
 
         Boolean isBackButtonPressed = settings.getBoolean("isBackButtonPressed", true);
         String token = settings.getString("token", "");
+        Log.d("Tring","Token : "+token);
         if (!"null".equals(number) && isBackButtonPressed == false && token.equals("")) {
             Intent intent = new Intent(this, NumberActivity.class);
             intent.putExtra(EXTRA_MESSAGE, number);
@@ -45,6 +46,8 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
         if (!token.equals("")) {
             Intent intent = new Intent(this, MainScreen.class);
             startActivity(intent);
+            Log.d("Tring","After intent of MainScreen");
+            this.finish();
         }
 
 
@@ -165,7 +168,8 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("Tring", "Inside onActivityResult of Tring2");
         super.onActivityResult(requestCode, resultCode, data);
-        this.finish();
+        if(resultCode==RESULT_OK){
+        this.finish();}
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.example.robinsuri.tring;
 
 import android.util.Log;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpEntity;
@@ -17,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by robinsuri on 10/30/14.
@@ -54,29 +58,43 @@ public class ZeusClient implements IZeusClient {
         Log.d("Tring", "Gson serialized string : " + getorcreategson);
 
         final HttpPost postRequest = preparePostRequest(stagingUrl + getOrCreateUrl, getorcreategson);
-        ISendHttpRequest.HttpRequestCallback getOrCreateProfileCallback = new ISendHttpRequest.HttpRequestCallback() {
+
+        final ListenableFuture<HttpResponse> future = sendhttprequest.sendPostRequest(postRequest);
+        Futures.addCallback(future,new FutureCallback<HttpResponse>() {
             @Override
-            public void httpResponse(HttpResponse httpresponse) throws IOException {
-                Log.d("Tring", httpresponse.toString());
-                HttpEntity entity = httpresponse.getEntity();
-                String responseString = EntityUtils.toString(entity, "UTF-8");
+            public void onSuccess(HttpResponse httpResponse) {
                 try {
-                    JSONObject jsonResponse = new JSONObject(responseString);
-                    Log.d("Tring", "json response : " + jsonResponse);
-                    String guid = (String) jsonResponse.get("guid");
-                    callbackForCreateAccount.createCallback(guid);
+                    HttpResponse httpresponse = future.get();
+                    Log.d("Tring", httpresponse.toString());
+                    HttpEntity entity = httpresponse.getEntity();
+                    String responseString = EntityUtils.toString(entity, "UTF-8");
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseString);
+                        Log.d("Tring", "json response : " + jsonResponse);
+                        String guid = (String) jsonResponse.get("guid");
+                        callbackForCreateAccount.createCallback(guid);
 
 
-                } catch (JSONException e) {
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callbackForCreateAccount.handleError(e, e.getMessage());
+                    }
+
+                    Log.d("Tring", responseString);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
-                    callbackForCreateAccount.handleError(e, e.getMessage());
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            }
 
-                Log.d("Tring", responseString);
+            @Override
+            public void onFailure(Throwable throwable) {
 
             }
-        };
-        sendhttprequest.sendPostRequest(postRequest, getOrCreateProfileCallback);
+        });
     }
 
 
@@ -89,12 +107,19 @@ public class ZeusClient implements IZeusClient {
         String jsonSessionRequest = gson.toJson(sessionRequestGson);
         final HttpPost sessionPostRequest = preparePostRequest(stagingUrl + sessionUrl, jsonSessionRequest);
 
-        final SendHttpRequestImpl.HttpRequestCallback sessionResponseCallback = new SendHttpRequestImpl.HttpRequestCallback() {
-            @Override
-            public void httpResponse(HttpResponse httpresponse) throws IOException {
 
+        ListenableFuture<HttpResponse> future =  sendhttprequest.sendPostRequest(sessionPostRequest);
+
+        Futures.addCallback(future,new FutureCallback<HttpResponse>() {
+            @Override
+            public void onSuccess(HttpResponse httpresponse) {
                 HttpEntity entity = httpresponse.getEntity();
-                String responseString = EntityUtils.toString(entity, "UTF-8");
+                String responseString = null;
+                try {
+                    responseString = EntityUtils.toString(entity, "UTF-8");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 JSONObject jsonResponse = null;
                 try {
                     jsonResponse = new JSONObject(responseString);
@@ -106,10 +131,13 @@ public class ZeusClient implements IZeusClient {
                     e.printStackTrace();
                     callbackForSessionCreate.handleError(e, e.getMessage());
                 }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
 
             }
-        };
-        sendhttprequest.sendPostRequest(sessionPostRequest, sessionResponseCallback);
+        });
 
     }
 
@@ -147,12 +175,18 @@ public class ZeusClient implements IZeusClient {
         authenticateGson.setSessionId(sessionId);
         String jsonAuthenticateRequest = gson.toJson(authenticateGson);
         final HttpPost authenticatePostRequest = preparePostRequest(stagingUrl + authentiateUrl, jsonAuthenticateRequest);
-        final SendHttpRequestImpl.HttpRequestCallback httpResponseCallback = new SendHttpRequestImpl.HttpRequestCallback() {
-            @Override
-            public void httpResponse(HttpResponse httpresponse) throws IOException {
 
+        ListenableFuture<HttpResponse> future = sendhttprequest.sendPostRequest(authenticatePostRequest);
+        Futures.addCallback(future,new FutureCallback<HttpResponse>() {
+            @Override
+            public void onSuccess(HttpResponse httpresponse) {
                 HttpEntity entity = httpresponse.getEntity();
-                String responseString = EntityUtils.toString(entity, "UTF-8");
+                String responseString = null;
+                try {
+                    responseString = EntityUtils.toString(entity, "UTF-8");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 JSONObject jsonResponse = null;
                 try {
                     jsonResponse = new JSONObject(responseString);
@@ -164,10 +198,13 @@ public class ZeusClient implements IZeusClient {
                     e.printStackTrace();
                     callbackForAuthentication.handleError(e, e.getMessage());
                 }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
 
             }
-        };
-        sendhttprequest.sendPostRequest(authenticatePostRequest, httpResponseCallback);
+        });
 
 
     }
