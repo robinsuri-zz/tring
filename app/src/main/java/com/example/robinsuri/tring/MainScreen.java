@@ -45,10 +45,9 @@ public class MainScreen extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onCickRegisterAgain(View v)
-    {
+    public void onCickRegisterAgain(View v) {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor e= settings.edit();
+        SharedPreferences.Editor e = settings.edit();
         e.clear();
         e.commit();
 

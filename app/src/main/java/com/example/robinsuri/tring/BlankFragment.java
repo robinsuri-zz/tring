@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -18,7 +17,6 @@ import android.view.ViewGroup;
  * to handle interaction events.
  * Use the {@link BlankFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
 public class BlankFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -49,6 +47,7 @@ public class BlankFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     public BlankFragment() {
         // Required empty public constructor
     }
@@ -66,7 +65,7 @@ public class BlankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d("BlankFragment","Inside onCreateView");
+        Log.d("BlankFragment", "Inside onCreateView");
         return inflater.inflate(R.layout.fragment_blank, container, false);
     }
 
@@ -99,7 +98,7 @@ public class BlankFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.

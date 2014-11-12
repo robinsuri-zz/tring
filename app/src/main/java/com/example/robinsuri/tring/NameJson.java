@@ -1,11 +1,14 @@
 package com.example.robinsuri.tring;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by robinsuri on 10/30/14.
  */
 public class NameJson {
-
+    @SerializedName("firstName")
     String _firstName;
+    @SerializedName("lastName")
     String _lastName;
 
     public String getFirstName() {

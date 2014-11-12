@@ -32,11 +32,7 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
         setContentView(R.layout.activity_tring);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         String number = settings.getString("number", "null");
-//        FragmentManager fragmentManager = getFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        BlankFragment fragment = new BlankFragment();
-//        fragmentTransaction.add(R.id.Form, fragment);
-//        fragmentTransaction.commit();
+
         Boolean isBackButtonPressed = settings.getBoolean("isBackButtonPressed", true);
         String token = settings.getString("token", "");
         if (!"null".equals(number) && isBackButtonPressed == false && token.equals("")) {

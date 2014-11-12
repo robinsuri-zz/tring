@@ -92,6 +92,7 @@ public class NumberActivity extends Activity {
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putString("token", token);
                     editor.commit();
+
                     runOnUiThread(new Runnable() {
 
 
