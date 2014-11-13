@@ -16,6 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
 import java.io.IOException;
 
 
@@ -24,9 +28,11 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
     public static final String PREFS_NAME = "MyPrefsFile";
     final String EXTRA_MESSAGE = "message";
     String stagingUrl = "https://proxy-staging-external.handler.talk.to/";
+    public static SharedPreferences settings = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        settings = this.getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
         Log.d("Tring", "Inside onCreate of Tring");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tring);
@@ -35,7 +41,7 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
 
         Boolean isBackButtonPressed = settings.getBoolean("isBackButtonPressed", true);
         String token = settings.getString("token", "");
-        Log.d("Tring","Token : "+token);
+        Log.d("Tring", "Token : " + token);
         if (!"null".equals(number) && isBackButtonPressed == false && token.equals("")) {
             Intent intent = new Intent(this, NumberActivity.class);
             intent.putExtra(EXTRA_MESSAGE, number);
@@ -46,7 +52,7 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
         if (!token.equals("")) {
             Intent intent = new Intent(this, MainScreen.class);
             startActivity(intent);
-            Log.d("Tring","After intent of MainScreen");
+            Log.d("Tring", "After intent of MainScreen");
             this.finish();
         }
 
@@ -95,13 +101,10 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
 
         zeusservice.setStagingUrl(stagingUrl);
 
-        final callbackForSessionCreate callbackForSessionCreate = new callbackForSessionCreate() {
+        ListenableFuture<String> future = zeusservice.getmapping(firstName, lastName, number, emailId);
+        Futures.addCallback(future, new FutureCallback<String>() {
             @Override
-            public void sessionCallback(final String mapping, String sessionId) {
-                persist(mapping, sessionId);
-
-
-                Log.d("Tring", "mapping : " + mapping);
+            public void onSuccess(final String mapping) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -111,70 +114,35 @@ public class Tring extends Activity implements BlankFragment.OnFragmentInteracti
                         startActivityForResult(intent, 1);
                     }
                 });
-
-
-            }
-
-            private void persist(String mapping, String sessionId) {
-                SharedPreferences settings = tring.getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString("number", mapping);
-                editor.putString("sessionId", sessionId);
-                editor.commit();
-                Log.d("Tring", "Number from file : " + settings.getString("number", ""));
             }
 
             @Override
-            public void handleError(Exception e, String errorMessage) {
+            public void onFailure(Throwable throwable) {
 
-                new AlertDialog.Builder(tring)
-                        .setTitle("Error!!")
-                        .setMessage("Error in processing").setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
             }
-
-        };
-
-
-        zeusservice.getmapping(firstName, lastName, number, emailId, callbackForSessionCreate);
+        });
 
 
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    public interface callbackForSessionCreate {
-        void sessionCallback(String mapping, String sessionId);
-
-        void handleError(Exception e, String errorMessage);
-    }
-
-    public interface callbackForCreateAccount {
-        void createCallback(String guid);
-
-        void handleError(Exception e, String errorMessage);
-    }
-
-    public interface callbackForAuthentication {
-        void authenticateCallback(String token);
-
-        void handleError(Exception e, String errorMessage);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("Tring", "Inside onActivityResult of Tring2");
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
-        this.finish();}
+        if (resultCode == RESULT_OK) {
+            this.finish();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.d("Tring", "Inside onDestroy");
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

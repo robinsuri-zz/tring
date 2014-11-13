@@ -13,16 +13,32 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 public class NumberActivity extends Activity {
     public static final String PREFS_NAME = "MyPrefsFile";
     String stagingUrl = "https://proxy-staging-external.handler.talk.to/";
     boolean isClicked = false;
+    public static SharedPreferences settings = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        settings = this.getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
         Log.d("NumberActivity", "Inside onCreate of NumberActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_number);
@@ -83,16 +99,19 @@ public class NumberActivity extends Activity {
             final ZeusService zeusservice = new ZeusService();
             Log.d("NumberActivity", "After call");
             zeusservice.setStagingUrl(stagingUrl);
-            Tring.callbackForAuthentication callbackForAuthentication = new Tring.callbackForAuthentication() {
-
+            SharedPreferences.Editor editor = settings.edit();
+            String sessionId = settings.getString("sessionId", "");
+            String guid = settings.getString("guid", "");
+            Log.d("NumberActivity", "Calling getToken of zeusService");
+            ListenableFuture<String> future = zeusservice.getToken(guid, sessionId);
+            Futures.addCallback(future, new FutureCallback<String>() {
                 @Override
-                public void authenticateCallback(String token) {
-                    Log.d("NumberActivity", "Token : " + token);
-                    SharedPreferences settings = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString("token", token);
-                    editor.commit();
-
+                public void onSuccess(String token) {
+                    Log.d("NumberActivity", "After REfactoring Token is : " + token);
+//                    SharedPreferences settings = getApplicationContext().getSharedPreferences(PREFS_NAME, 0);
+//                        SharedPreferences.Editor editor = settings.edit();
+//                        editor.putString("token", token);
+//                        editor.commit();
                     runOnUiThread(new Runnable() {
 
 
@@ -107,19 +126,15 @@ public class NumberActivity extends Activity {
                         }
                     });
 
-
                 }
 
                 @Override
-                public void handleError(Exception e, String errorMessage) {
-                    Log.d("NumberActivity", "Inside handleError");
+                public void onFailure(Throwable throwable) {
+
                 }
-            };
-            SharedPreferences.Editor editor = settings.edit();
-            String sessionId = settings.getString("sessionId", "");
-            String guid = settings.getString("guid", "");
-            Log.d("NumberActivity", "Calling getToken of zeusService");
-            zeusservice.getToken(guid, sessionId, callbackForAuthentication);
+            });
+
+            Log.d("NumberActivity", "Before addCallback current Thread Name : " + Thread.currentThread().getName());
             editor.putBoolean("isPaused", false);
         }
 

@@ -39,7 +39,7 @@ public class SendHttpRequestImpl implements ISendHttpRequest {
                 Log.d("Tring", "inside sendRequest");
                 HttpResponse response = httpclient.execute(postRequest);
                 Log.d("Tring", "URI : " + postRequest.getURI());
-
+                Log.d("SendHttpRequestImpl", "current Thread Name : " + Thread.currentThread().getName());
                 return response;
             }
         });

@@ -1,5 +1,9 @@
 package com.example.robinsuri.tring;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
+import org.apache.http.HttpResponse;
+
 /**
  * Created by robinsuri on 10/30/14.
  */
@@ -8,9 +12,7 @@ public interface IZeusClient {
 
     void setSessionUrl(String sessionUrl);
 
-    //  void setStagingUrl(String stagingUrl);
+    ListenableFuture<HttpResponse> createAccount(String firstName, String lastName, String number, String emailId);
 
-    void createAccount(String firstName, String lastName, String number, String emailId, Tring.callbackForCreateAccount callbackForCreateAccount);
-
-    void getSessionMappingFromGuid(String guid, Tring.callbackForSessionCreate sessioncallback);
+    ListenableFuture<HttpResponse> getSessionMappingFromGuid(String guid);
 }

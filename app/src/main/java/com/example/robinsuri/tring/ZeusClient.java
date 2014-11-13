@@ -51,7 +51,7 @@ public class ZeusClient implements IZeusClient {
     }
 
     @Override
-    public void createAccount(String firstName, String lastName, String number, String emailId, final Tring.callbackForCreateAccount callbackForCreateAccount) {
+    public ListenableFuture<HttpResponse> createAccount(String firstName, String lastName, String number, String emailId) {
         final GetorCreateJson getorCreateJson = generateGetorCreateProfileJson(firstName, lastName, number, emailId);
 
         String getorcreategson = gson.toJson(getorCreateJson);
@@ -60,84 +60,49 @@ public class ZeusClient implements IZeusClient {
         final HttpPost postRequest = preparePostRequest(stagingUrl + getOrCreateUrl, getorcreategson);
 
         final ListenableFuture<HttpResponse> future = sendhttprequest.sendPostRequest(postRequest);
-        Futures.addCallback(future,new FutureCallback<HttpResponse>() {
-            @Override
-            public void onSuccess(HttpResponse httpResponse) {
-                try {
-                    HttpResponse httpresponse = future.get();
-                    Log.d("Tring", httpresponse.toString());
-                    HttpEntity entity = httpresponse.getEntity();
-                    String responseString = EntityUtils.toString(entity, "UTF-8");
-                    try {
-                        JSONObject jsonResponse = new JSONObject(responseString);
-                        Log.d("Tring", "json response : " + jsonResponse);
-                        String guid = (String) jsonResponse.get("guid");
-                        callbackForCreateAccount.createCallback(guid);
+        return future;
 
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        callbackForCreateAccount.handleError(e, e.getMessage());
-                    }
-
-                    Log.d("Tring", responseString);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
     }
 
 
     @Override
-    public void getSessionMappingFromGuid(String guid, final Tring.callbackForSessionCreate callbackForSessionCreate) {
+    public ListenableFuture<HttpResponse> getSessionMappingFromGuid(String guid) {
 
 
         SessionRequestGson sessionRequestGson = new SessionRequestGson();
         sessionRequestGson.setGuid(guid);
         String jsonSessionRequest = gson.toJson(sessionRequestGson);
         final HttpPost sessionPostRequest = preparePostRequest(stagingUrl + sessionUrl, jsonSessionRequest);
-
-
-        ListenableFuture<HttpResponse> future =  sendhttprequest.sendPostRequest(sessionPostRequest);
-
-        Futures.addCallback(future,new FutureCallback<HttpResponse>() {
-            @Override
-            public void onSuccess(HttpResponse httpresponse) {
-                HttpEntity entity = httpresponse.getEntity();
-                String responseString = null;
-                try {
-                    responseString = EntityUtils.toString(entity, "UTF-8");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                JSONObject jsonResponse = null;
-                try {
-                    jsonResponse = new JSONObject(responseString);
-                    Log.d("Tring", "json response : " + jsonResponse);
-                    String mapping = (String) jsonResponse.get("mapping");
-                    String sessionId = (String) jsonResponse.get("sessionId");
-                    callbackForSessionCreate.sessionCallback(mapping, sessionId);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    callbackForSessionCreate.handleError(e, e.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
+        ListenableFuture<HttpResponse> future = sendhttprequest.sendPostRequest(sessionPostRequest);
+        return future;
+//        Futures.addCallback(future, new FutureCallback<HttpResponse>() {
+//            @Override
+//            public void onSuccess(HttpResponse httpresponse) {
+//                HttpEntity entity = httpresponse.getEntity();
+//                String responseString = null;
+//                try {
+//                    responseString = EntityUtils.toString(entity, "UTF-8");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                JSONObject jsonResponse = null;
+//                try {
+//                    jsonResponse = new JSONObject(responseString);
+//                    Log.d("Tring", "json response : " + jsonResponse);
+//                    String mapping = (String) jsonResponse.get("mapping");
+//                    String sessionId = (String) jsonResponse.get("sessionId");
+//                    callbackForSessionCreate.sessionCallback(mapping, sessionId);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                    callbackForSessionCreate.handleError(e, e.getMessage());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//
+//            }
+//        });
 
     }
 
@@ -169,43 +134,16 @@ public class ZeusClient implements IZeusClient {
         return postRequest;
     }
 
-    void authenticate(String guid, String sessionId, final Tring.callbackForAuthentication callbackForAuthentication) {
+    ListenableFuture<HttpResponse> authenticate(String guid, String sessionId) {
+        Log.d("ZeusClient", "Inside authenticate");
         AuthenticateGson authenticateGson = new AuthenticateGson();
         authenticateGson.setGuid(guid);
         authenticateGson.setSessionId(sessionId);
         String jsonAuthenticateRequest = gson.toJson(authenticateGson);
         final HttpPost authenticatePostRequest = preparePostRequest(stagingUrl + authentiateUrl, jsonAuthenticateRequest);
-
+        final String[] token2 = new String[1];
         ListenableFuture<HttpResponse> future = sendhttprequest.sendPostRequest(authenticatePostRequest);
-        Futures.addCallback(future,new FutureCallback<HttpResponse>() {
-            @Override
-            public void onSuccess(HttpResponse httpresponse) {
-                HttpEntity entity = httpresponse.getEntity();
-                String responseString = null;
-                try {
-                    responseString = EntityUtils.toString(entity, "UTF-8");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                JSONObject jsonResponse = null;
-                try {
-                    jsonResponse = new JSONObject(responseString);
-                    Log.d("Tring", "json response : " + jsonResponse);
-                    String token = (String) jsonResponse.get("token");
-                    callbackForAuthentication.authenticateCallback(token);
-                } catch (JSONException e) {
-                    Log.d("ZeusClient", "No token found");
-                    e.printStackTrace();
-                    callbackForAuthentication.handleError(e, e.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
-
+        return future;
 
     }
 
