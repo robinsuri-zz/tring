@@ -71,7 +71,6 @@ public class ZeusService {
         final ListenableFuture<String> future1 = Futures.transform(future, new AsyncFunction<HttpResponse, String>() {
             @Override
             public ListenableFuture<String> apply(HttpResponse httpResponse) {
-                ListenableFuture<String> future1 = null;
                 ListenableFuture<String> future2 = null;
                 try {
                     Log.d("Tring", httpResponse.toString());
@@ -94,31 +93,28 @@ public class ZeusService {
                             String mapping = null;
                             try {
                                 responseString = EntityUtils.toString(entity, "UTF-8");
+
+                                JSONObject jsonResponse = null;
+
+                                jsonResponse = new JSONObject(responseString);
+
+                                Log.d("Tring", "json response : " + jsonResponse);
+
+                                mapping = (String) jsonResponse.get("mapping");
+
+                                String sessionId = null;
+
+                                sessionId = (String) jsonResponse.get("sessionId");
+
+                                persist(mapping, sessionId);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            JSONObject jsonResponse = null;
-                            try {
-                                jsonResponse = new JSONObject(responseString);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            Log.d("Tring", "json response : " + jsonResponse);
-                            try {
-                                mapping = (String) jsonResponse.get("mapping");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            String sessionId = null;
-                            try {
-                                sessionId = (String) jsonResponse.get("sessionId");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            persist(mapping, sessionId);
                             return mapping;
                         }
-
                     });
 
 
@@ -130,6 +126,7 @@ public class ZeusService {
                 return future2;
             }
         });
+
         return future1;
     }
 

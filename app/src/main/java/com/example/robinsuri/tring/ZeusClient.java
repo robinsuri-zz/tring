@@ -75,34 +75,7 @@ public class ZeusClient implements IZeusClient {
         final HttpPost sessionPostRequest = preparePostRequest(stagingUrl + sessionUrl, jsonSessionRequest);
         ListenableFuture<HttpResponse> future = sendhttprequest.sendPostRequest(sessionPostRequest);
         return future;
-//        Futures.addCallback(future, new FutureCallback<HttpResponse>() {
-//            @Override
-//            public void onSuccess(HttpResponse httpresponse) {
-//                HttpEntity entity = httpresponse.getEntity();
-//                String responseString = null;
-//                try {
-//                    responseString = EntityUtils.toString(entity, "UTF-8");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                JSONObject jsonResponse = null;
-//                try {
-//                    jsonResponse = new JSONObject(responseString);
-//                    Log.d("Tring", "json response : " + jsonResponse);
-//                    String mapping = (String) jsonResponse.get("mapping");
-//                    String sessionId = (String) jsonResponse.get("sessionId");
-//                    callbackForSessionCreate.sessionCallback(mapping, sessionId);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    callbackForSessionCreate.handleError(e, e.getMessage());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable) {
-//
-//            }
-//        });
+
 
     }
 
